@@ -1,0 +1,25 @@
+{
+  "name": "desplatur",
+  "version": "1.0.0",
+  "description": "Trabalho Prático: Desenvolvimento para Plataforma de Turismo",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FrankFeitosa/DesPlaTur.git"
+  },
+  "keywords": [],
+  "author": "Frank Feitosa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FrankFeitosa/DesPlaTur/issues"
+  },
+  "homepage": "https://github.com/FrankFeitosa/DesPlaTur#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
