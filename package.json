@@ -20,6 +20,10 @@
   },
   "homepage": "https://github.com/FrankFeitosa/DesPlaTur#readme",
   "dependencies": {
-    "express": "^5.1.0"
+    "bcrypt": "^6.0.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "sqlite3": "^5.1.7",
+    "zod": "^3.24.4"
   }
 }
