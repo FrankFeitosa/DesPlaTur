@@ -1,72 +1,54 @@
 import {PrismaClient} from '@prisma/client';
-
+import { generateToken, hashPassword } from '../utils/auth.js'
+import { compare } from 'bcrypt';
 const prisma = new PrismaClient();
 
-export const getAllUsers = async (req,res) => {
-    try {
-        const users = await prisma.user.findMany()
-        res.status(200).json(users)
-    } catch (error) {
-        res.status(500).json({message: "Usuários inexistentes", erro: error.message})
-    }
-}
 
-export const getIdUser = async (req, res) => {
-    const id = req.params.id
-    try {
-        const userId = await prisma.user.findUnique({
-            where:{ id: Number(id) }
-        })
-        res.status(200).json(userId)
-    } catch (error) {
-        console.error({message: "Id não encontrado", erro: error.message});
-    }
-}
-
-export const createAllUsers = async (req, res) => {
+export const registerUser = async (req, res) => {
    try {
     const {name, email,phone, password} = req.body;
-
-    const newUser = await prisma.user.create({
+    const newPassword = await hashPassword(password);
+    const newRegistedUser = await prisma.user.create({
         data: {
             name,
             email,
             phone,
-            password
+            password: newPassword
         }
     })
-    res.status(201).json(newUser);
+    res.status(201).json({
+        name: newRegistedUser.name,
+        email: newRegistedUser.email,
+        phone: newRegistedUser.phone
+    });
    } catch (error) {
     res.status(400).json({ message: "Ocorreu um erro ao criar novo usuário", erro: error.message});
    }
 };
 
-export const updateAllUsers = async (req, res) => {
-    const id = req.params.id
-    const {name, email, phone, password} = req.body
+export const loginUser = async(req,res) => {
     try {
-        const updatedUser = await prisma.user.update({
-            where: {id: parseInt(id)},
-            data: {name,  email, phone, password}
+        const {email, password} = req.body;
+        const user = await prisma.user.findUnique({
+            where: { email }
         })
-        res.status(200).json(updatedUser)
+        if(!user){
+            res.status(401).json({message: 'Credenciais inválidas!'})
+        }
+        const isPasswordMatch = await compare(password, user.password)
+        if(!isPasswordMatch){
+            res.status(401).json({message: 'Credenciais inválidas!'})
+        }
+        const token = generateToken(user);
+        res.json({
+            user: {name: user.name, email: user.email},
+            token
+        })
+        
     } catch (error) {
-        res.status(400).json({
-            message: "erro ao atualizar o usuário",
+        res.status(500).json({
+            message: 'Erro ao fazer o login',
             erro: error.message
         })
     }
 }
-
-export const deleteUsers = async (req, res) => {
-    try {
-        const id = req.params.id
-        const deletedUser = await prisma.user.delete({
-            where: {id: Number(id) }
-        });
-        res.status(204).send()
-    } catch (error) {
-        res.status(404).json({message: "Usuário não encontrado.", erro: error.message})
-    }
-};
-
