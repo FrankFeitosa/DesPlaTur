@@ -12,9 +12,9 @@ export async function compare(password,hashPassword) {
     return await bcrypt.compare(password, hashPassword)
 }
 
-export function generateToken(user) {
+export function generateToken(user,tipo) {
     return jwt.sign(
-        {id: user.id, email: user.email},
+        {id: user.id, email: user.email, type:tipo},
         JWT_SECRET,
         {expiresIn: '1h'}
     )

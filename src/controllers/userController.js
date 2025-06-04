@@ -26,24 +26,41 @@ export const registerUser = async (req, res) => {
    }
 };
 
-export const loginUser = async(req,res) => {
+export const login = async(req,res) => {
     try {
         const {email, password} = req.body;
+
         const user = await prisma.user.findUnique({
             where: { email }
         })
-        if(!user){
-            res.status(401).json({message: 'Credenciais inválidas!'})
-        }
-        const isPasswordMatch = await compare(password, user.password)
-        if(!isPasswordMatch){
-            res.status(401).json({message: 'Credenciais inválidas!'})
-        }
-        const token = generateToken(user);
-        res.json({
-            user: {name: user.name, email: user.email},
-            token
+        const admin = await prisma.admin.findUnique({
+            where: { email }
         })
+        if(user){
+            const isPasswordMatch = await compare(password, user.password)
+            if(isPasswordMatch){
+                const token = generateToken(user,"user");
+                res.json({
+                    message: 'Credenciais válidas!',
+                    name: user.name,
+                    email: user.email,
+                    token
+                })
+            }
+        }else if(admin){
+            const isPasswordMatch = await compare(password, admin.password)
+            if(isPasswordMatch){
+                const token = generateToken(admin,"admin");
+                res.json({
+                    message: 'Credenciais válidas!',
+                    name: admin.name,
+                    email: admin.email,
+                    token
+                })
+            }
+        }else {
+            res.status(401).json({message: 'Credenciais inválidas!'})
+        }
         
     } catch (error) {
         res.status(500).json({
