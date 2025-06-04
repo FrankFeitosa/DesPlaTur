@@ -39,7 +39,7 @@ export const login = async(req,res) => {
         if(user){
             const isPasswordMatch = await compare(password, user.password)
             if(isPasswordMatch){
-                const token = generateToken(user);
+                const token = generateToken(user,"user");
                 res.json({
                     message: 'Credenciais válidas!',
                     name: user.name,
@@ -50,7 +50,7 @@ export const login = async(req,res) => {
         }else if(admin){
             const isPasswordMatch = await compare(password, admin.password)
             if(isPasswordMatch){
-                const token = generateToken(admin);
+                const token = generateToken(admin,"admin");
                 res.json({
                     message: 'Credenciais válidas!',
                     name: admin.name,
